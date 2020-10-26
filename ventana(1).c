@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 #include <mysql.h> 
 #include <stdio.h>
+#include <gtksourceview/gtksource.h>
 
 GtkBuilder      *builder; 
 GtkWidget       *window_login;
@@ -390,22 +391,21 @@ void contenido_tablas(){
 	{ 
 	}
 	res = mysql_use_result(conn);
-	
-	gtk_list_store_clear (store);
-	gtk_list_store_clear (store2);
-	
+	gtk_list_store_clear(store);
+	gtk_list_store_clear(store2);
 	
 while ((row = mysql_fetch_row(res)) != NULL)
 {
-	if(strcmp(tabla, "auditoria_factura") != 0)
-		{
-			gtk_tree_view_remove_column (GTK_TREE_VIEW (view),COLid);
+			if(strcmp(tabla,"auditoria_factura") != 0)
+			{
+				
 			view= titulo_comic_auditoria();
-		}
-		else{
-				gtk_tree_view_remove_column (GTK_TREE_VIEW (view),idauditoria);
-				view = titulo_examen_auditoria();
 			}
+		else
+		{
+			view= titulo_examen_auditoria();
+		}
+			
 }
 	mysql_free_result(res);
 	mysql_close(conn);
@@ -515,8 +515,16 @@ void on_btn_cerrar_acd_clicked (){
 	gtk_widget_hide_on_delete(win_acercade);
 	}
 void on_activador_sql_state_set(){
-	 gtk_widget_show_now(source_code);
-	}	
+	if (gtk_switch_get_active (GTK_SWITCH (switchgtk))){
+		 gtk_widget_show_now(source_code);
+	}else{
+    gtk_widget_hide(source_code);
+	}
+}
+	
+void on_cerrar_acercade_clicked(){
+	gtk_widget_hide_on_delete(win_acercade);
+	}
 	
 void on_btn_aceptar_dial_advertencia_clicked(){
 	
