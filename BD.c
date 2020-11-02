@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * gcc -Wall -o "%e" "%f" `pkg-config --cflags --libs gtk+-3.0` $(mysql_config --cflags) $(mysql_config --libs)  `pkg-config --cflags --libs gtksourceview-4` -rdynamic -lm
+ *gcc -Wall -o "%e" "%f" `pkg-config --cflags --libs gtk+-3.0` $(mysql_config --cflags) $(mysql_config --libs)  `pkg-config --cflags --libs gtksourceview-4` -rdynamic -lm
  */
 
 
@@ -38,11 +38,15 @@ GtkWidget			*source_code;
 GtkLabel			*La_lbl_Titulo_BD;
 GtkLabel			*La_Label_Error_ingreso;
 GtkWidget			*lbl_no_datos;
+GtkLabel			*lbl_añadir_advertencia;
 GtkWidget			*menu_items;
 GtkWidget			*tabla_items;
 GtkWidget			*switchgtk;
 GtkWidget       	*view;
 GtkWidget       	*view2;
+GtkWidget       	*dialog_advertencia_añadir;
+GtkWidget       	*dialog_advertencia_actualizar;
+GtkWidget       	*dialog_advertencia_eliminar;
 GtkWidget			*contenedor_view2;
 GtkWidget			*contenedor_view;
 GtkWidget       	*stackgtk;
@@ -164,7 +168,6 @@ static GtkTreeModel * create_and_fill_model (void)
 {	
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"ID",renderer,"text", COLid,NULL);
-	
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Nombre Anterior",renderer,"text", COLnomant,NULL);
 	renderer = gtk_cell_renderer_text_new ();
@@ -199,7 +202,7 @@ static GtkTreeModel * create_and_fill_model (void)
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Modiicado",renderer,"text", COLmodificado,NULL);
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"IDHeroe",renderer,"text", COLidheroe,NULL);
-	 g_object_unref(model);
+	
 	model = create_and_fill_model ();
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
 	return view;
@@ -418,10 +421,8 @@ while ((row = mysql_fetch_row(res)) != NULL)
 			{
 			gtk_stack_set_visible_child (GTK_STACK(stackgtk),contenedor_view);	
 				if (gtk_tree_model_get_iter_first(model, &iter) == FALSE) {
-					
 					titulo_comic_auditoria();
-					return;
-			//view=NULL;	
+					return;	
 			}
 		}
 		else
@@ -435,6 +436,18 @@ while ((row = mysql_fetch_row(res)) != NULL)
 			view2=NULL;
 		}	
 }
+	char templabel[60];
+	sprintf(templabel,"¿Desea añadir elementos ala tabla %s?",tabla);
+	gtk_label_set_text(lbl_añadir_advertencia,templabel);
+	
+	/*char templabelmod[60];
+	sprintf(templabelmod,"¿Desea modificar el elemento %s ala tabla %s?",tabla);
+	gtk_label_set_text(lbl_añadir_advertencia,templabelmod);
+	
+	char templabelelimar[60];
+	sprintf(templabelelimar,"¿Desea eliminar el elemento %s de la tabla %s?",tabla);
+	gtk_label_set_text(lbl_añadir_advertencia,templabelelimar);
+	*/
 	
 	mysql_free_result(res);
 	mysql_close(conn);
@@ -483,17 +496,15 @@ void on_Entry_Contraseña_activate(gpointer  user_data)
 	 conectar();
 }
 	
-void on_btn_salir_dialog_clicked()
+void on_btn_cancelar_adver3_clicked()
 {
-		exit(0);
+	gtk_widget_hide(g_Dialog_Error);
 }
 	
 void on_btn_Rein_Dial_clicked()
 {
 	gtk_entry_set_text(g_Entry_Usuario,"");
 	gtk_entry_set_text(g_Entry_Contraseña,"");
-	gtk_combo_box_text_remove_all (GTK_COMBO_BOX_TEXT (menu_items));
-	gtk_combo_box_text_remove_all (GTK_COMBO_BOX_TEXT (tabla_items));
 	gtk_widget_hide_on_delete (g_Dialog_Error);
 }
 void on_Combo_Box_Mostrar_TD_changed(GtkComboBox *widget){
@@ -527,15 +538,43 @@ int main(int argc, char *argv[])
 	switchgtk = GTK_WIDGET(gtk_builder_get_object(builder,"activador_sql"));
 	source_code = GTK_WIDGET(gtk_builder_get_object(builder,"Codigo_sql"));
 	lbl_no_datos = GTK_WIDGET(gtk_builder_get_object(builder,"lbl_no_datos"));
-
+	lbl_añadir_advertencia = GTK_LABEL(gtk_builder_get_object(builder,"lbl_añadir_advertencia"));
+	dialog_advertencia_añadir = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_advertencia_añadir"));
+	dialog_advertencia_actualizar = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_advertencia_actualizar"));
+	dialog_advertencia_eliminar = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_advertencia_eliminar"));
+	
     g_object_unref(builder);
     gtk_widget_show(window_login);  
     gtk_widget_hide(source_code); 
     gtk_main();
 }
-
-
-
+//=========== Añadir datos =====================================
+void on_btn_añadir_datos_clicked(){
+	gtk_widget_show(dialog_advertencia_añadir);
+	}
+void on_btn_cancelar_adver_clicked(){
+	gtk_widget_hide(dialog_advertencia_añadir);
+	}
+void on_btn_aceptar_añadir_clicked(){
+		
+	}
+//================================================
+//=========== Actualiza datos ====================================
+void on_btn_actualizar_datos_clicked(){
+	gtk_widget_show(dialog_advertencia_actualizar);
+	}
+void on_btn_cancelar_adver1_clicked(){
+	gtk_widget_hide(dialog_advertencia_actualizar);
+	}
+//================================================
+//=========== Elimina datos =====================================
+void on_btn_eliminar_datos_clicked(){
+	gtk_widget_show(dialog_advertencia_eliminar);
+	}
+void on_btn_cancelar_adver2_clicked(){
+	gtk_widget_hide(dialog_advertencia_eliminar);
+	}
+//================================================
 void on_Window_BD_destroy()
 {
 	gtk_main_quit();
