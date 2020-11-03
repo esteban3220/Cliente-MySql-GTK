@@ -404,9 +404,11 @@ Author: Esteban Noe Sarmiento Mtz.
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">Login</property>
     <property name="resizable">False</property>
+    <property name="window-position">center</property>
     <property name="default-width">300</property>
     <property name="default-height">450</property>
     <property name="icon-name">network-server</property>
+    <property name="gravity">center</property>
     <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
     <child>
       <object class="GtkAspectFrame" id="Login">
@@ -670,6 +672,7 @@ Author: Esteban Noe Sarmiento Mtz.
       </object>
     </child>
   </object>
+  <object class="GtkTextBuffer" id="textbuffer_main"/>
   <object class="GtkWindow" id="Window_BD">
     <property name="can-focus">False</property>
     <property name="window-position">center</property>
@@ -745,6 +748,7 @@ Author: Esteban Noe Sarmiento Mtz.
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
+                    <property name="spacing">1</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
@@ -758,25 +762,129 @@ Author: Esteban Noe Sarmiento Mtz.
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSearchEntry">
+                      <object class="GtkSearchEntry" id="entry_buscar">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="primary-icon-name">edit-find-symbolic</property>
                         <property name="primary-icon-activatable">False</property>
                         <property name="primary-icon-sensitive">False</property>
                         <property name="input-hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
+                        <property name="populate-all">True</property>
+                        <signal name="activate" handler="on_entry_buscar_activate" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkSeparator">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkStack" id="stack_historial">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="transition-type">slide-down</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="name">page0</property>
+                            <property name="title" translatable="yes">page0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="contenedor_historial">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="spacing">22</property>
+                                <property name="homogeneous">True</property>
+                                <child>
+                                  <object class="GtkButton" id="remover_item">
+                                    <property name="label" translatable="yes">Remover</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <signal name="clicked" handler="on_remover_item_clicked" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="remover_todos_items">
+                                    <property name="label" translatable="yes">Remover Todo</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <signal name="clicked" handler="on_remover_todos_items_clicked" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkScrolledWindow">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="shadow-type">in</property>
+                                <child>
+                                  <object class="GtkTreeView" id="historial_busqueda">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="name">page1</property>
+                            <property name="title" translatable="yes">page1</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -851,7 +959,7 @@ Author: Esteban Noe Sarmiento Mtz.
                           <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="homogeneous">True</property>
+                            <property name="spacing">15</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
@@ -866,15 +974,63 @@ Author: Esteban Noe Sarmiento Mtz.
                             </child>
                             <child>
                               <object class="GtkSwitch" id="activador_sql">
-                                <property name="use-action-appearance">True</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
                                 <signal name="state-set" handler="on_activador_sql_state_set" swapped="no"/>
                               </object>
                               <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkStack" id="stack_aceptar">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="transition-type">crossfade</property>
+                                <property name="interpolate-size">True</property>
+                                <child>
+                                  <object class="GtkBox" id="ocultar_btn">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Debug</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="name">page0</property>
+                                    <property name="title" translatable="yes">page0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="btn_sql_aceptar">
+                                    <property name="label">gtk-ok</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="use-stock">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="name">page1</property>
+                                    <property name="title" translatable="yes">page1</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">1</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                           </object>
@@ -885,28 +1041,61 @@ Author: Esteban Noe Sarmiento Mtz.
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkScrolledWindow">
+                          <object class="GtkStack" id="stack_sql">
                             <property name="visible">True</property>
-                            <property name="can-focus">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="transition-type">crossfade</property>
                             <child>
-                              <object class="GtkSourceView" id="Codigo_sql">
+                              <object class="GtkScrolledWindow" id="debug">
+                                <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="tooltip-text" translatable="yes">Escribe sentencias de MySql</property>
-                                <property name="wrap-mode">word</property>
-                                <property name="left-margin">2</property>
-                                <property name="right-margin">2</property>
-                                <property name="input-purpose">terminal</property>
-                                <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
-                                <property name="populate-all">True</property>
-                                <property name="monospace">True</property>
-                                <property name="show-line-numbers">True</property>
-                                <property name="show-line-marks">True</property>
-                                <property name="tab-width">1</property>
-                                <property name="auto-indent">True</property>
-                                <property name="insert-spaces-instead-of-tabs">True</property>
-                                <property name="smart-home-end">always</property>
-                                <property name="highlight-current-line">True</property>
+                                <property name="shadow-type">in</property>
+                                <child>
+                                  <object class="GtkTextView" id="debug_textview">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="editable">False</property>
+                                    <property name="wrap-mode">word</property>
+                                    <property name="cursor-visible">False</property>
+                                    <property name="buffer">textbuffer_main</property>
+                                  </object>
+                                </child>
                               </object>
+                              <packing>
+                                <property name="name">page1</property>
+                                <property name="title" translatable="yes">page1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkScrolledWindow" id="contenedor_sql">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <child>
+                                  <object class="GtkSourceView" id="Codigo_sql">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="tooltip-text" translatable="yes">Escribe sentencias de MySql</property>
+                                    <property name="wrap-mode">word</property>
+                                    <property name="left-margin">2</property>
+                                    <property name="right-margin">2</property>
+                                    <property name="input-purpose">terminal</property>
+                                    <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
+                                    <property name="populate-all">True</property>
+                                    <property name="show-line-numbers">True</property>
+                                    <property name="show-line-marks">True</property>
+                                    <property name="tab-width">1</property>
+                                    <property name="auto-indent">True</property>
+                                    <property name="insert-spaces-instead-of-tabs">True</property>
+                                    <property name="smart-home-end">always</property>
+                                    <property name="highlight-current-line">True</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="name">page0</property>
+                                <property name="title" translatable="yes">page0</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </object>
                           <packing>
@@ -940,7 +1129,7 @@ Author: Esteban Noe Sarmiento Mtz.
               <object class="GtkStack" id="stack">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="transition-type">over-up</property>
+                <property name="transition-type">crossfade</property>
                 <child>
                   <object class="GtkLabel" id="lbl_no_datos">
                     <property name="name">lbl_no_datos</property>
@@ -1037,7 +1226,7 @@ Author: Esteban Noe Sarmiento Mtz.
                           <object class="GtkImage" id="image1">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-select-all</property>
+                            <property name="icon-name">stock_shared-to-me</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1122,12 +1311,19 @@ Author: Esteban Noe Sarmiento Mtz.
                     </child>
                     <child>
                       <object class="GtkButton" id="btn_añadir_datos">
-                        <property name="label" translatable="yes">Añadir</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <property name="tooltip-text" translatable="yes">Añadir</property>
                         <property name="relief">none</property>
                         <signal name="clicked" handler="on_btn_añadir_datos_clicked" swapped="no"/>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="icon-name">document-new-symbolic</property>
+                          </object>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1137,12 +1333,19 @@ Author: Esteban Noe Sarmiento Mtz.
                     </child>
                     <child>
                       <object class="GtkButton" id="btn_actualizar_datos">
-                        <property name="label" translatable="yes">Actualizar</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <property name="relief">none</property>
                         <signal name="clicked" handler="on_btn_actualizar_datos_clicked" swapped="no"/>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Editar/Actualizar</property>
+                            <property name="icon-name">stock_edit</property>
+                          </object>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1152,12 +1355,19 @@ Author: Esteban Noe Sarmiento Mtz.
                     </child>
                     <child>
                       <object class="GtkButton" id="btn_eliminar_datos">
-                        <property name="label" translatable="yes">Eliminar</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <property name="relief">none</property>
                         <signal name="clicked" handler="on_btn_eliminar_datos_clicked" swapped="no"/>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Eliminar</property>
+                            <property name="icon-name">stock_insert-rule</property>
+                          </object>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>

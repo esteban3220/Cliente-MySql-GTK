@@ -31,6 +31,7 @@ GtkBuilder      	*builder;
 GtkWidget   	    *window_login;
 GtkEntry 			*g_Entry_Usuario;
 GtkEntry 			*g_Entry_Contraseña;
+GtkEntry			*entry_buscar;
 GtkWidget 			*g_Dialog_Error;
 GtkWidget			*window_BD;
 GtkWidget			*win_acercade;
@@ -42,13 +43,24 @@ GtkLabel			*lbl_añadir_advertencia;
 GtkWidget			*menu_items;
 GtkWidget			*tabla_items;
 GtkWidget			*switchgtk;
+GtkWidget			*stack_sql;
+GtkWidget			*stack_historial;
+GtkWidget			*stack_aceptar;
+GtkWidget			*btn_sql_aceptar;
+GtkWidget			*ocultar_btn;
 GtkWidget       	*view;
 GtkWidget       	*view2;
+GtkWidget			*contenedor_historial;
+GtkWidget			*historial_busqueda;
+GtkWidget       	*debug;
+GtkTextBuffer 		*textbuffer_main;
+GtkTextView			*debug_textview;
 GtkWidget       	*dialog_advertencia_añadir;
 GtkWidget       	*dialog_advertencia_actualizar;
 GtkWidget       	*dialog_advertencia_eliminar;
 GtkWidget			*contenedor_view2;
 GtkWidget			*contenedor_view;
+GtkWidget			*contenedor_sql;
 GtkWidget       	*stackgtk;
 MYSQL 				*conn;
 MYSQL_RES 			*res;
@@ -62,11 +74,19 @@ GtkTreeModel        *model2;
 GtkListStore  		*store2;
 GtkTreeViewColumn 	*column;
 GtkTreeViewColumn 	*column2;
+GtkTreeSelection 	*seleccion_view;
+GtkTreeSelection 	*seleccion_view2;
+GtkTreeSelection 	*selection; 
+
 
 
 const char 		*user;
 const char 		*password;
 
+enum {
+  LIST_ITEM = 0,
+  N_COLUMNS_BUS
+};
 enum
 {
 	COLid,
@@ -362,7 +382,6 @@ void mostrar_tablas()
 	password = gtk_entry_get_text(g_Entry_Contraseña);
 	const char *database = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(menu_items));
 	char *server = "localhost";
-	//char *database = "mysql";
 	conn = mysql_init(NULL);
 	/* Conectarse a la base de datos */
 
@@ -397,6 +416,9 @@ void contenido_tablas(){
 	const char *database = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(menu_items));
 	const char *tabla = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(tabla_items));
 	g_print ("As Escogido la tabla %s\n", tabla);
+	
+	char debugtabla[50];
+	sprintf(debugtabla,"As Escogido la Tabla %s\n", tabla);
 	char mostrarContenido[50];
 	char *server = "localhost";
 	sprintf(mostrarContenido,"select * from %s",tabla);
@@ -422,7 +444,7 @@ while ((row = mysql_fetch_row(res)) != NULL)
 			gtk_stack_set_visible_child (GTK_STACK(stackgtk),contenedor_view);	
 				if (gtk_tree_model_get_iter_first(model, &iter) == FALSE) {
 					titulo_comic_auditoria();
-					return;	
+					return ;	
 			}
 		}
 		else
@@ -430,7 +452,7 @@ while ((row = mysql_fetch_row(res)) != NULL)
 			gtk_stack_set_visible_child (GTK_STACK(stackgtk),contenedor_view2);
 				if (gtk_tree_model_get_iter_first(model2, &iter2) == FALSE) {
 					titulo_examen_auditoria();
-					return;	
+					return ;	
 			}
 			
 			view2=NULL;
@@ -448,7 +470,8 @@ while ((row = mysql_fetch_row(res)) != NULL)
 	sprintf(templabelelimar,"¿Desea eliminar el elemento %s de la tabla %s?",tabla);
 	gtk_label_set_text(lbl_añadir_advertencia,templabelelimar);
 	*/
-	
+	gtk_text_buffer_set_text (textbuffer_main,debugtabla,-1);
+	gtk_text_view_set_buffer (debug_textview, textbuffer_main);
 	mysql_free_result(res);
 	mysql_close(conn);
 }
@@ -456,6 +479,8 @@ void on_Combo_Box_Mostrar_BD_changed(GtkComboBox *widget)
 {
 	GtkComboBox *menu_items = widget;
 	const char *database = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(menu_items));
+	char debugbd[50];
+	sprintf(debugbd,"As Escogido la Bases de Datos %s\n", database);
     g_print ("As Escogido la BD %s\n", database);
     char temp[60];
 	sprintf(temp,"%s Sobre BD %s",user,database);
@@ -464,6 +489,8 @@ void on_Combo_Box_Mostrar_BD_changed(GtkComboBox *widget)
 	char temp2[30];
 	sprintf(temp2,"use %s",database);
 	gtk_combo_box_text_remove_all (GTK_COMBO_BOX_TEXT (tabla_items));
+	gtk_text_buffer_set_text (textbuffer_main,debugbd,-1);
+	gtk_text_view_set_buffer (debug_textview, textbuffer_main);
 	mostrar_tablas();
 }	
 
@@ -510,7 +537,22 @@ void on_btn_Rein_Dial_clicked()
 void on_Combo_Box_Mostrar_TD_changed(GtkComboBox *widget){
 	contenido_tablas();
 	}
-	
+void init_list(GtkWidget *historial_busqueda) {
+
+  GtkCellRenderer    *renderer_bus;
+  GtkTreeViewColumn  *column_bus;
+  GtkListStore 		*store_bus;
+
+  renderer_bus = gtk_cell_renderer_text_new();
+  column_bus = gtk_tree_view_column_new_with_attributes("Historial de Busqueda",renderer_bus, "text", LIST_ITEM, NULL);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(historial_busqueda), column_bus);
+
+  store_bus = gtk_list_store_new(N_COLUMNS_BUS, G_TYPE_STRING);
+
+  gtk_tree_view_set_model(GTK_TREE_VIEW(historial_busqueda), GTK_TREE_MODEL(store_bus));
+
+  g_object_unref(store_bus);
+}
 int main(int argc, char *argv[])
 {
     gtk_init(&argc, &argv);
@@ -533,7 +575,12 @@ int main(int argc, char *argv[])
 	view2 = GTK_WIDGET(gtk_builder_get_object(builder,"view2"));
 	contenedor_view2 = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_view2"));
 	contenedor_view = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_view"));
+	contenedor_sql = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_sql"));
 	stackgtk = GTK_WIDGET(gtk_builder_get_object(builder,"stack"));
+	stack_sql = GTK_WIDGET(gtk_builder_get_object(builder,"stack_sql"));
+	stack_aceptar = GTK_WIDGET(gtk_builder_get_object(builder,"stack_aceptar"));
+	btn_sql_aceptar = GTK_WIDGET(gtk_builder_get_object(builder,"btn_sql_aceptar"));
+	ocultar_btn = GTK_WIDGET(gtk_builder_get_object(builder,"ocultar_btn"));
 	win_acercade = GTK_WIDGET(gtk_builder_get_object(builder,"acercade"));
 	switchgtk = GTK_WIDGET(gtk_builder_get_object(builder,"activador_sql"));
 	source_code = GTK_WIDGET(gtk_builder_get_object(builder,"Codigo_sql"));
@@ -542,10 +589,20 @@ int main(int argc, char *argv[])
 	dialog_advertencia_añadir = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_advertencia_añadir"));
 	dialog_advertencia_actualizar = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_advertencia_actualizar"));
 	dialog_advertencia_eliminar = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_advertencia_eliminar"));
+	seleccion_view = GTK_TREE_SELECTION(gtk_builder_get_object(builder,"seleccion_view"));
+	seleccion_view2 = GTK_TREE_SELECTION(gtk_builder_get_object(builder,"seleccion_view2"));
+	debug_textview = GTK_TEXT_VIEW(gtk_builder_get_object(builder,"debug_textview"));
+	debug = GTK_WIDGET(gtk_builder_get_object(builder,"debug"));
+	textbuffer_main = GTK_TEXT_BUFFER(gtk_builder_get_object(builder, "textbuffer_main"));
+	entry_buscar = GTK_ENTRY(gtk_builder_get_object(builder,"entry_buscar"));
+	historial_busqueda = GTK_WIDGET(gtk_builder_get_object(builder,"historial_busqueda"));
+	stack_historial = GTK_WIDGET(gtk_builder_get_object(builder,"stack_historial"));
+	contenedor_historial = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_historial"));
 	
+    selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historial_busqueda));
+    init_list(historial_busqueda);
     g_object_unref(builder);
     gtk_widget_show(window_login);  
-    gtk_widget_hide(source_code); 
     gtk_main();
 }
 //=========== Añadir datos =====================================
@@ -559,6 +616,9 @@ void on_btn_aceptar_añadir_clicked(){
 		
 	}
 //================================================
+
+
+
 //=========== Actualiza datos ====================================
 void on_btn_actualizar_datos_clicked(){
 	gtk_widget_show(dialog_advertencia_actualizar);
@@ -588,12 +648,72 @@ void on_btn_cerrar_acd_clicked (){
 	}
 void on_activador_sql_state_set(){
 	if (gtk_switch_get_active (GTK_SWITCH (switchgtk))){
-		 gtk_widget_show_now(source_code);
+		gtk_stack_set_visible_child (GTK_STACK(stack_aceptar),btn_sql_aceptar);
+		gtk_stack_set_visible_child (GTK_STACK(stack_sql),contenedor_sql);
 	}else{
-    gtk_widget_hide(source_code);
+		gtk_stack_set_visible_child (GTK_STACK(stack_aceptar),ocultar_btn);
+		gtk_stack_set_visible_child (GTK_STACK(stack_sql),debug);
 	}
 }
+void remove_item() {
+    
+  GtkListStore *store_bus;
+  GtkTreeIter iter_bus;
+  GtkTreeModel *model_bus;
+
+  store_bus = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(historial_busqueda)));
+  model_bus = gtk_tree_view_get_model(GTK_TREE_VIEW(historial_busqueda));
+
+  if (gtk_tree_model_get_iter_first(model_bus, &iter_bus) == FALSE) {
+      return;
+  }
+
+  if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), 
+         &model, &iter)) {
+    gtk_list_store_remove(store_bus, &iter_bus);
+  }
+}
+void remove_all() {
+    
+  GtkListStore *store_bus;
+  GtkTreeModel *model_bus;
+  GtkTreeIter  iter_bus;
+
+  store_bus = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(historial_busqueda)));
+  model_bus = gtk_tree_view_get_model(GTK_TREE_VIEW(historial_busqueda));
+
+  if (gtk_tree_model_get_iter_first(model_bus, &iter_bus) == FALSE) {
+      return;
+  }
+  
+  gtk_list_store_clear(store_bus);
+}
+
+void meter_historial(){
+	GtkListStore 	*store_bus;
+	GtkTreeIter 	iter_bus;
+
+	const gchar *str = gtk_entry_get_text(entry_buscar); 
+
+	store_bus = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(historial_busqueda)));
+
+	gtk_list_store_append(store_bus, &iter_bus);
+	gtk_list_store_set(store_bus, &iter_bus, LIST_ITEM, str, -1);
+	gtk_entry_set_text(entry_buscar,"");
+	gtk_stack_set_visible_child (GTK_STACK(stack_historial),contenedor_historial);
+}
 	
+
+void on_entry_buscar_activate(){
+	meter_historial();
+	}
+void on_remover_item_clicked(){
+	remove_item();
+	}
+void on_remover_todos_items_clicked(){
+	remove_all();
+	}
+
 void on_cerrar_acercade_clicked(){
 	gtk_widget_hide_on_delete(win_acercade);
 	}
