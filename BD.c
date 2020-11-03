@@ -556,7 +556,7 @@ void init_list(GtkWidget *historial_busqueda) {
 int main(int argc, char *argv[])
 {
     gtk_init(&argc, &argv);
-
+	
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, "window_main.glade", NULL);
 
@@ -601,6 +601,7 @@ int main(int argc, char *argv[])
 	
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historial_busqueda));
     init_list(historial_busqueda);
+    
     g_object_unref(builder);
     gtk_widget_show(window_login);  
     gtk_main();
@@ -668,8 +669,7 @@ void remove_item() {
       return;
   }
 
-  if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), 
-         &model, &iter)) {
+  if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model_bus, &iter_bus)) {
     gtk_list_store_remove(store_bus, &iter_bus);
   }
 }

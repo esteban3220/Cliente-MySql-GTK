@@ -851,6 +851,7 @@ Author: Esteban Noe Sarmiento Mtz.
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="pack-type">end</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -863,6 +864,7 @@ Author: Esteban Noe Sarmiento Mtz.
                                   <object class="GtkTreeView" id="historial_busqueda">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="enable-grid-lines">horizontal</property>
                                   </object>
                                 </child>
                               </object>
