@@ -38,9 +38,18 @@ GtkEntry			*ety_apelli;
 GtkEntry			*ety_fcomp;
 GtkEntry			*ety_monto;
 GtkEntry			*ety_prod;
+GtkEntry			*ety_clien_act;
+GtkEntry			*ety_apelli_act;
+GtkEntry			*ety_fcomp_act;
+GtkEntry			*ety_monto_act;
+GtkEntry			*ety_prod_act;
+GtkEntry			*id_fac_act;
+GtkEntry			*ety_id_fac_borrar;
 GtkWidget 			*g_Dialog_Error;
 GtkWidget			*window_BD;
 GtkWidget			*inserta_factura;	
+GtkWidget			*actualiza_factura;
+GtkWidget 			*pop_delete_fac;
 GtkWidget			*cb_anio_fac;
 GtkWidget			*win_acercade;
 GtkWidget			*source_code;
@@ -54,6 +63,10 @@ GtkLabel			*lbl_error;
 GtkWidget			*cb_anio_fac;
 GtkWidget			*cb_mes_fac;
 GtkWidget			*cb_dia_fac;
+GtkToggleButton		*btn_eliminar_datos;
+GtkWidget			*cb_anio_fac_actu;
+GtkWidget			*cb_mes_fac_actu;
+GtkWidget			*cb_dia_fac_actu;
 GtkWidget			*menu_items;
 GtkWidget			*tabla_items;
 GtkWidget			*switchgtk;
@@ -65,7 +78,10 @@ GtkWidget			*ocultar_btn;
 GtkWidget       	*view;
 GtkWidget			*dialog_error_datos;
 GtkWidget       	*view2;
+GtkWidget			*view_busc;
+GtkWidget			*stack_busqueda;
 GtkWidget			*contenedor_historial;
+GtkWidget			*contenedor_busqueda;
 GtkWidget			*historial_busqueda;
 GtkWidget       	*debug;
 GtkCalendar			*calendario_factura;
@@ -84,12 +100,47 @@ MYSQL_ROW 			row;
 GtkListStore  		*store;
 GtkTreeIter    		iter;
 GtkTreeIter    		iter2;
+GtkTreeIter    		iter_busqueda;
 GtkCellRenderer     *renderer;
 GtkTreeModel        *model;
 GtkTreeModel        *model2;
+GtkTreeModel        *model_busc;
 GtkListStore  		*store2;
+GtkListStore  		*store_busqueda;
 GtkTreeViewColumn 	*column;
 GtkTreeViewColumn 	*column2;
+GtkTreeViewColumn 	*column3;
+GtkTreeViewColumn 	*column4;
+GtkTreeViewColumn 	*column5;
+GtkTreeViewColumn 	*column6;
+GtkTreeViewColumn 	*column7;
+GtkTreeViewColumn 	*column8;
+GtkTreeViewColumn 	*column9;
+GtkTreeViewColumn 	*column10;
+GtkTreeViewColumn 	*column11;
+GtkTreeViewColumn 	*column12;
+GtkTreeViewColumn 	*column13;
+GtkTreeViewColumn 	*column14;
+GtkTreeViewColumn 	*column15;
+GtkTreeViewColumn 	*column16;
+GtkTreeViewColumn 	*column17;
+
+GtkTreeViewColumn 	*column_fac;
+GtkTreeViewColumn 	*column_fac2;
+GtkTreeViewColumn 	*column_fac3;
+GtkTreeViewColumn 	*column_fac4;
+GtkTreeViewColumn 	*column_fac5;
+GtkTreeViewColumn 	*column_fac6;
+GtkTreeViewColumn 	*column_fac7;
+
+GtkTreeViewColumn 	*column_fac_bus;
+GtkTreeViewColumn 	*column_fac2_bus;
+GtkTreeViewColumn 	*column_fac3_bus;
+GtkTreeViewColumn 	*column_fac4_bus;
+GtkTreeViewColumn 	*column_fac5_bus;
+GtkTreeViewColumn 	*column_fac6_bus;
+GtkTreeViewColumn 	*column_fac7_bus;
+
 GtkTreeSelection 	*seleccion_view;
 GtkTreeSelection 	*seleccion_view2;
 GtkTreeSelection 	*selection; 
@@ -114,6 +165,18 @@ enum
 	COLestatura,
 	NUM_COLS
 } ;
+enum
+{
+	COLid_bus,
+	COLnomant_bus,
+	COLedadant_bus,
+	COLapodoant_bus,
+	COLpoderes_bus,
+	COLsexo_bus,
+	COLestatura_bus,
+	NUM_COLS_bus
+} ;
+
 
 enum
 {
@@ -165,23 +228,91 @@ static GtkTreeModel * create_and_fill_model (void)
  static GtkWidget *titulo_factura_auditoria (void)
 {	
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"ID Factura",renderer,"text", COLid,NULL);
+	column_fac = gtk_tree_view_column_new_with_attributes  ("ID Factura",renderer,"text", COLid,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view),column_fac);
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Cliente",renderer,"text", COLnomant,NULL);
+	column_fac2 = gtk_tree_view_column_new_with_attributes ("Cliente",renderer,"text", COLnomant,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view),column_fac2);
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Apellidos",renderer,"text", COLedadant,NULL);
+	column_fac3 = gtk_tree_view_column_new_with_attributes  ("Apellidos",renderer,"text", COLedadant,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view),column_fac3);
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Productos",renderer,"text", COLapodoant,NULL);
+	column_fac4 = gtk_tree_view_column_new_with_attributes  ("Productos",renderer,"text", COLapodoant,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view),column_fac4);
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Monto",renderer,"text", COLpoderes,NULL);
+	column_fac5 = gtk_tree_view_column_new_with_attributes  ("Monto",renderer,"text", COLpoderes,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view),column_fac5);
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Fecha Compra",renderer,"text", COLsexo,NULL);
+	column_fac6 = gtk_tree_view_column_new_with_attributes ("Fecha Compra",renderer,"text", COLsexo,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view),column_fac6);
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),-1,"Formato Compra",renderer,"text", COLestatura,NULL);
+	column_fac7 = gtk_tree_view_column_new_with_attributes ("Formato Compra",renderer,"text", COLestatura,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view),column_fac7);
+	
+	
 	
 	model = create_and_fill_model ();
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
+	g_object_unref (model);
 	return view;
+}
+
+
+static GtkTreeModel * create_and_fill_model_busqueda (void)
+{
+	store_busqueda = gtk_list_store_new (NUM_COLS_bus, G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,
+	G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING);
+	
+	gtk_list_store_append (store_busqueda, &iter_busqueda);
+	gtk_list_store_set (store_busqueda, &iter_busqueda,COLid_bus, row[0],
+	COLnomant_bus, row[1],
+	COLedadant_bus, row[2],
+	COLapodoant_bus, row[3],
+	COLpoderes_bus, row[4],
+	COLsexo_bus, row[5],
+	COLestatura_bus, row[6],-1);
+	while ((row = mysql_fetch_row(res)) != NULL){
+	gtk_list_store_append (store_busqueda, &iter_busqueda);
+	gtk_list_store_set (store_busqueda, &iter_busqueda,COLid_bus, row[0],
+	COLnomant_bus, row[1],
+	COLedadant_bus, row[2],
+	COLapodoant_bus, row[3],
+	COLpoderes_bus, row[4],
+	COLsexo_bus, row[5],
+	COLestatura_bus, row[6],-1);
+}
+	return GTK_TREE_MODEL (store_busqueda);
+}
+ static GtkWidget *titulo_factura_auditoria_busqueda (void)
+{	
+	renderer = gtk_cell_renderer_text_new ();
+	column_fac_bus = gtk_tree_view_column_new_with_attributes  ("ID Factura",renderer,"text", COLid_bus,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view_busc),column_fac_bus);
+	renderer = gtk_cell_renderer_text_new ();
+	column_fac2_bus = gtk_tree_view_column_new_with_attributes ("Cliente",renderer,"text", COLnomant_bus,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view_busc),column_fac2_bus);
+	renderer = gtk_cell_renderer_text_new ();
+	column_fac3_bus = gtk_tree_view_column_new_with_attributes  ("Apellidos",renderer,"text", COLedadant_bus,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view_busc),column_fac3_bus);
+	renderer = gtk_cell_renderer_text_new ();
+	column_fac4_bus = gtk_tree_view_column_new_with_attributes  ("Productos",renderer,"text", COLapodoant_bus,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view_busc),column_fac4_bus);
+	renderer = gtk_cell_renderer_text_new ();
+	column_fac5_bus = gtk_tree_view_column_new_with_attributes  ("Monto",renderer,"text", COLpoderes_bus,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view_busc),column_fac5_bus);
+	renderer = gtk_cell_renderer_text_new ();
+	column_fac6_bus = gtk_tree_view_column_new_with_attributes ("Fecha Compra",renderer,"text", COLsexo_bus,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view_busc),column_fac6_bus);
+	renderer = gtk_cell_renderer_text_new ();
+	column_fac7_bus = gtk_tree_view_column_new_with_attributes ("Formato Compra",renderer,"text", COLestatura_bus,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view_busc),column_fac7_bus);
+	
+	
+	
+	model_busc = create_and_fill_model_busqueda ();
+	gtk_tree_view_set_model (GTK_TREE_VIEW (view_busc), model_busc);
+	g_object_unref (model_busc);
+	return view_busc;
 }
 
 
@@ -237,60 +368,61 @@ static GtkTreeModel *examen_auditoria (void)
 {
 	
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("ID",renderer,"text", idauditoria,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column = gtk_tree_view_column_new_with_attributes ("ID",renderer,"text", idauditoria,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column);
 	renderer = gtk_cell_renderer_text_new ();
 	column2 = gtk_tree_view_column_new_with_attributes ("Cliente Anterior",renderer,"text", cliente,NULL);
 	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Apellido Anterior",renderer,"text", apellidos,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column3 = gtk_tree_view_column_new_with_attributes ("Apellido Anterior",renderer,"text", apellidos,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column3);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Productos Anterior",renderer,"text", productos,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column4 = gtk_tree_view_column_new_with_attributes ("Productos Anterior",renderer,"text", productos,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column4);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Monto Anterior",renderer,"text", monto,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column5 = gtk_tree_view_column_new_with_attributes ("Monto Anterior",renderer,"text", monto,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column5);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Fecha Comp. Anterior",renderer,"text", fecha,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column6 = gtk_tree_view_column_new_with_attributes ("Fecha Comp. Anterior",renderer,"text", fecha,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column6);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Formato Pago Anterior",renderer,"text", formato,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column7 = gtk_tree_view_column_new_with_attributes ("Formato Pago Anterior",renderer,"text", formato,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column7);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Cliente Nuevo.",renderer,"text", clientenew,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column8 = gtk_tree_view_column_new_with_attributes ("Cliente Nuevo.",renderer,"text", clientenew,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column8);
 	renderer = gtk_cell_renderer_text_new ();
-	column2= gtk_tree_view_column_new_with_attributes ("Apellido Nuevo",renderer,"text", apellidosnew,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column9= gtk_tree_view_column_new_with_attributes ("Apellido Nuevo",renderer,"text", apellidosnew,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column9);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Producto Nuevo",renderer,"text", productosnew,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column10 = gtk_tree_view_column_new_with_attributes ("Producto Nuevo",renderer,"text", productosnew,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column10);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Monto Nuevo",renderer,"text", montonew,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column11 = gtk_tree_view_column_new_with_attributes ("Monto Nuevo",renderer,"text", montonew,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column11);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Fecha Comp. Nuevo",renderer,"text", fechanew,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column12 = gtk_tree_view_column_new_with_attributes ("Fecha Comp. Nuevo",renderer,"text", fechanew,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column12);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Formato Pago Nuevo",renderer,"text", formatonew,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column13 = gtk_tree_view_column_new_with_attributes ("Formato Pago Nuevo",renderer,"text", formatonew,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column13);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Usuario",renderer,"text", usuario,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column14 = gtk_tree_view_column_new_with_attributes ("Usuario",renderer,"text", usuario,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column14);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Fecha Mod.",renderer,"text", modificado,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column15 = gtk_tree_view_column_new_with_attributes ("Fecha Mod.",renderer,"text", modificado,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column15);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Accion",renderer,"text", accion,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column16 = gtk_tree_view_column_new_with_attributes ("Accion",renderer,"text", accion,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column16);
 	renderer = gtk_cell_renderer_text_new ();
-	column2 = gtk_tree_view_column_new_with_attributes ("Id Factura",renderer,"text", idfactura,NULL);
-	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column2);
+	column17 = gtk_tree_view_column_new_with_attributes ("Id Factura",renderer,"text", idfactura,NULL);
+	gtk_tree_view_append_column ( GTK_TREE_VIEW (view2),column17);
 	renderer = gtk_cell_renderer_text_new ();
-	g_object_unref(model2);
+	
 	model2 = examen_auditoria ();
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view2), model2);
+	g_object_unref (model2);
 	return view2;
 }
 
@@ -371,7 +503,6 @@ void mostrar_tablas()
 void contenido_tablas(){
 	const char *database = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(menu_items));
 	const char *tabla = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(tabla_items));
-	g_print ("As Escogido la tabla %s\n", tabla);
 	
 	char debugtabla[50];
 	sprintf(debugtabla,"As Escogido la Tabla %s\n", tabla);
@@ -398,8 +529,8 @@ while ((row = mysql_fetch_row(res)) != NULL)
 			if(strcmp(tabla,"auditoria_factura") != 0)
 			{
 			gtk_stack_set_visible_child (GTK_STACK(stackgtk),contenedor_view);	
-				if (gtk_tree_model_get_iter_first(model, &iter) == FALSE) {
-					view = titulo_factura_auditoria();
+			if (gtk_tree_model_get_iter_first(model, &iter) == FALSE) {
+					 titulo_factura_auditoria();
 					return ;	
 			}
 		}
@@ -479,6 +610,44 @@ void on_btn_Rein_Dial_clicked()
 		gtk_entry_set_text(g_Entry_Contraseña,"");
 		gtk_widget_hide_on_delete (g_Dialog_Error);
 	}
+void refresca_datos(){
+	gtk_list_store_clear(store2);
+	gtk_list_store_clear(store);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view), column_fac);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view), column_fac2);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view), column_fac3);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view), column_fac4);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view), column_fac5);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view), column_fac6);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view), column_fac7);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column2);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column3);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column4);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column5);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column6);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column7);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column8);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column9);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column10);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column11);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column12);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column13);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column14);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column15);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column16);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view2), column17);
+	}
+void refresca_busqueda(){
+	gtk_list_store_clear(store_busqueda);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view_busc), column_fac_bus);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view_busc), column_fac2_bus);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view_busc), column_fac3_bus);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view_busc), column_fac4_bus);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view_busc), column_fac5_bus);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view_busc), column_fac6_bus);
+	gtk_tree_view_remove_column (GTK_TREE_VIEW(view_busc), column_fac7_bus);
+	}
 void on_Combo_Box_Mostrar_TD_changed(GtkComboBox *widget)
 	{
 		contenido_tablas();
@@ -511,14 +680,14 @@ int main(int argc, char *argv[])
 
 		window_login = GTK_WIDGET(gtk_builder_get_object(builder, "Login_main"));
 		window_BD = GTK_WIDGET(gtk_builder_get_object(builder,"Window_BD"));
-		gtk_builder_connect_signals(builder, NULL);
-
+		actualiza_factura = GTK_WIDGET(gtk_builder_get_object(builder,"actualiza_factura"));
 		g_Entry_Usuario = GTK_ENTRY(gtk_builder_get_object(builder,"Entry_Usuario"));
 		g_Entry_Contraseña = GTK_ENTRY(gtk_builder_get_object(builder,"Entry_Contraseña"));
 		g_Dialog_Error = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_Error"));
 		lbl_error = GTK_LABEL(gtk_builder_get_object(builder,"lbl_error"));
 		inserta_factura = GTK_WIDGET(gtk_builder_get_object(builder,"inserta_factura"));
 		pop_calendario = GTK_WIDGET(gtk_builder_get_object(builder,"pop_calendario"));
+		pop_delete_fac = GTK_WIDGET(gtk_builder_get_object(builder,"pop_delete_fac"));
 		La_lbl_Titulo_BD = GTK_LABEL(gtk_builder_get_object(builder,"lbl_Titulo_BD"));
 		La_Label_Error_ingreso = GTK_LABEL(gtk_builder_get_object(builder,"Label_Error_ingreso"));
 		menu_items = GTK_WIDGET(gtk_builder_get_object(builder,"Combo_Box_Mostrar_BD"));
@@ -527,10 +696,13 @@ int main(int argc, char *argv[])
 		dialog_error_datos = GTK_WIDGET(gtk_builder_get_object(builder,"dialog_error_datos"));
 		view = GTK_WIDGET(gtk_builder_get_object(builder,"view"));
 		view2 = GTK_WIDGET(gtk_builder_get_object(builder,"view2"));
+		view_busc = GTK_WIDGET(gtk_builder_get_object(builder,"view_busc"));
 		contenedor_view2 = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_view2"));
 		contenedor_view = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_view"));
+		contenedor_busqueda = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_busqueda"));
 		contenedor_sql = GTK_WIDGET(gtk_builder_get_object(builder,"contenedor_sql"));
 		stackgtk = GTK_WIDGET(gtk_builder_get_object(builder,"stack"));
+		stack_busqueda = GTK_WIDGET(gtk_builder_get_object(builder,"stack_busqueda"));
 		stack_sql = GTK_WIDGET(gtk_builder_get_object(builder,"stack_sql"));
 		stack_aceptar = GTK_WIDGET(gtk_builder_get_object(builder,"stack_aceptar"));
 		btn_sql_aceptar = GTK_WIDGET(gtk_builder_get_object(builder,"btn_sql_aceptar"));
@@ -559,10 +731,22 @@ int main(int argc, char *argv[])
 		ety_prod = GTK_ENTRY(gtk_builder_get_object(builder,"ety_prod"));
 		ety_monto = GTK_ENTRY(gtk_builder_get_object(builder,"ety_monto"));
 		ety_fcomp = GTK_ENTRY(gtk_builder_get_object(builder,"ety_fcomp"));
+		id_fac_act = GTK_ENTRY(gtk_builder_get_object(builder,"id_fac_act"));
+		ety_clien_act = GTK_ENTRY(gtk_builder_get_object(builder,"ety_clien_act"));
+		ety_apelli_act = GTK_ENTRY(gtk_builder_get_object(builder,"ety_apelli_act"));
+		ety_prod_act = GTK_ENTRY(gtk_builder_get_object(builder,"ety_prod_act"));
+		ety_monto_act = GTK_ENTRY(gtk_builder_get_object(builder,"ety_monto_act"));
+		ety_fcomp_act = GTK_ENTRY(gtk_builder_get_object(builder,"ety_fcomp_act"));
+		ety_id_fac_borrar = GTK_ENTRY(gtk_builder_get_object(builder,"ety_id_fac_borrar"));
 		cb_dia_fac = GTK_WIDGET(gtk_builder_get_object(builder,"cb_dia_fac"));
 		cb_mes_fac = GTK_WIDGET(gtk_builder_get_object(builder,"cb_mes_fac"));
 		cb_anio_fac = GTK_WIDGET(gtk_builder_get_object(builder,"cb_anio_fac"));
+		cb_dia_fac_actu = GTK_WIDGET(gtk_builder_get_object(builder,"cb_dia_fac_actu"));
+		cb_mes_fac_actu = GTK_WIDGET(gtk_builder_get_object(builder,"cb_mes_fac_actu"));
+		cb_anio_fac_actu = GTK_WIDGET(gtk_builder_get_object(builder,"cb_anio_fac_actu"));
 		calendario_factura = GTK_CALENDAR(gtk_builder_get_object(builder,"calendario_factura"));
+		btn_eliminar_datos = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"btn_eliminar_datos"));
+		
 		
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historial_busqueda));
 		
@@ -571,8 +755,11 @@ int main(int argc, char *argv[])
 		for(i=2021;i>=1950;i--){ 
 			sprintf(anio,"%d",i);
 			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (cb_anio_fac),anio);
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (cb_anio_fac_actu),anio);
+			
 		}
-		
+
+		gtk_builder_connect_signals(builder, NULL);
 		g_object_unref(builder);
 		gtk_widget_show(window_login);  
 		gtk_main();
@@ -631,21 +818,15 @@ void on_btn_aceptar_añadir_clicked(){
 		printf("%s",row[0]);
 	}
 	
-	store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(view)));
-	gtk_list_store_append(store, &iter);
-	gtk_list_store_set(store, &iter, COLnomant, cliente,
-	COLedadant, apellido,
-	COLapodoant, producto,
-	COLpoderes, monto,
-	COLsexo,date,
-	COLestatura, compra, -1);
-	
 	gtk_entry_set_text(ety_clien,"");
 	gtk_entry_set_text(ety_apelli,"");
 	gtk_entry_set_text(ety_fcomp,"");
 	gtk_entry_set_text(ety_monto,"");
 	gtk_entry_set_text(ety_prod,"");
 	
+	refresca_datos();
+	contenido_tablas();
+
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(dialog_advertencia_añadir);
@@ -671,33 +852,144 @@ void on_btn_aceptar_1_clicked(){
 	gtk_widget_hide(dialog_error_datos);
 	}
 //=========== Actualiza datos ====================================
+void on_btn_aceptar__clicked(){
+	user = gtk_entry_get_text(g_Entry_Usuario);
+	password = gtk_entry_get_text(g_Entry_Contraseña);
+	const char *database = "examen";
+	char actualiza_fac[512];
+	char date[13];
+	char *server = "localhost";
+	
+	
+	
+	const char 		*id = gtk_entry_get_text(id_fac_act);
+	const char 		*cliente = gtk_entry_get_text(ety_clien_act);
+	const char 		*apellido = gtk_entry_get_text(ety_apelli_act);
+	const char		*producto = gtk_entry_get_text(ety_prod_act);
+	const char		*monto = gtk_entry_get_text(ety_monto_act);
+	const char		*compra = gtk_entry_get_text(ety_fcomp_act);
+	const char 		*dia = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(cb_dia_fac_actu));
+	const char 		*mes = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(cb_mes_fac_actu));
+	const char 		*anio2 = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(cb_anio_fac_actu));
+
+	
+	sprintf(date,"%s-%s-%s",anio2,mes,dia);
+	sprintf(actualiza_fac,"update Factura set Cliente='%s', Apellidos='%s', Productos='%s', Monto=%s, FechaCompra='%s', FormatoPago='%s' where idFactura=%s",cliente,apellido,producto,monto,date,compra,id);
+	
+	conn = mysql_init(NULL);
+
+ if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0))
+	{	 
+	}
+
+	if (mysql_query(conn, actualiza_fac))
+	{
+		char tempErr[60];
+		sprintf(tempErr,"%s", mysql_error(conn));
+		gtk_label_set_text(lbl_error,tempErr);
+		gtk_widget_hide(dialog_advertencia_actualizar);
+		return gtk_widget_show(dialog_error_datos);
+	}
+	res = mysql_use_result(conn);
+	while ((row = mysql_fetch_row(res)) != NULL) {
+		printf("%s",row[0]);
+	}
+	/*
+	if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model_bus, &iter_bus)) {
+    gtk_list_store_remove(store, &iter);
+    }
+	store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(view)));
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter, COLnomant, cliente,
+	COLedadant, apellido,
+	COLapodoant, producto,
+	COLpoderes, monto,
+	COLsexo,date,
+	COLestatura, compra, -1);
+	*/
+	gtk_entry_set_text(id_fac_act,"");
+	gtk_entry_set_text(ety_clien_act,"");
+	gtk_entry_set_text(ety_apelli_act,"");
+	gtk_entry_set_text(ety_fcomp_act,"");
+	gtk_entry_set_text(ety_monto_act,"");
+	gtk_entry_set_text(ety_prod_act,"");
+	
+	contenido_tablas();
+	refresca_datos();
+	
+	mysql_free_result(res);
+	mysql_close(conn);
+	gtk_widget_hide(dialog_advertencia_actualizar);
+	}
+void on_actualiza_datos_factura_clicked(){
+		gtk_widget_show(dialog_advertencia_actualizar);
+	}
+void on_cancela_and_factura1_clicked(){
+		gtk_widget_hide(actualiza_factura);
+	}
 void on_btn_actualizar_datos_clicked(){
-	gtk_widget_show(dialog_advertencia_actualizar);
+	gtk_widget_show(actualiza_factura);
+	
 	}
 void on_btn_cancelar_adver1_clicked(){
 	gtk_widget_hide(dialog_advertencia_actualizar);
 	}
 //================================================
 //=========== Elimina datos =====================================
-void on_btn_eliminar_datos_clicked(){
-	gtk_widget_show(dialog_advertencia_eliminar);
+void on_btn_eliminar_datos_toggled(){
+	gboolean button_state;
+	button_state = gtk_toggle_button_get_active(btn_eliminar_datos);
+	if (button_state) {
+		// button is active
+		gtk_widget_set_visible (pop_delete_fac,gtk_toggle_button_get_active (btn_eliminar_datos));
 	}
+	else {
+		// button is inactive
+		gtk_widget_hide(pop_delete_fac);
+	}
+}
+void on_btn_borrar_fac_clicked(){
+	gtk_widget_show(dialog_advertencia_eliminar);
+}
+void on_ety_id_fac_borrar_activate(){
+	gtk_widget_show(dialog_advertencia_eliminar);
+}
 void on_btn_aceptar_a_clicked(){
+	user = gtk_entry_get_text(g_Entry_Usuario);
+	password = gtk_entry_get_text(g_Entry_Contraseña);
+	const char *database = "examen";
+	char elimina_fac[50];
+	char *server = "localhost";
 	
+	const char 	*id = gtk_entry_get_text(ety_id_fac_borrar);
 
-  store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(view)));
-  model = gtk_tree_view_get_model(GTK_TREE_VIEW(view));
-  
-  store2 = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(view2)));
-  model2 = gtk_tree_view_get_model(GTK_TREE_VIEW(view2));
+	sprintf(elimina_fac,"delete from Factura where idFactura=%s",id);
+	
+	conn = mysql_init(NULL);
 
-  if (gtk_tree_model_get_iter_first(model, &iter) == FALSE) {
-      return;
-  }
+ if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0))
+	{	 
+	}
 
-  if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(seleccion_view), &model, &iter)) {
-    gtk_list_store_remove(store, &iter);
-  }
+	if (mysql_query(conn, elimina_fac))
+	{
+		char tempErr[60];
+		sprintf(tempErr,"%s", mysql_error(conn));
+		gtk_label_set_text(lbl_error,tempErr);
+		gtk_widget_hide(dialog_advertencia_eliminar);
+		return gtk_widget_show(dialog_error_datos);
+	}
+	res = mysql_use_result(conn);
+	while ((row = mysql_fetch_row(res)) != NULL) {
+		//printf("%s",row[0]);
+	}
+	
+	gtk_entry_set_text(ety_id_fac_borrar,"");
+	refresca_datos();
+	contenido_tablas();
+	mysql_free_result(res);
+	mysql_close(conn);
+	gtk_widget_hide(dialog_advertencia_eliminar);
 }
 void on_btn_cancelar_adver2_clicked(){
 	gtk_widget_hide(dialog_advertencia_eliminar);
@@ -712,7 +1004,7 @@ void on_window_main_destroy()
     gtk_main_quit();
 }
 void on_btn_cerrar_acd_clicked (){
-	gtk_widget_hide_on_delete(win_acercade);
+	gtk_widget_hide (win_acercade);
 	}
 void on_activador_sql_state_set(){
 	if (gtk_switch_get_active (GTK_SWITCH (switchgtk))){
@@ -749,11 +1041,12 @@ void remove_all() {
   store_bus = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(historial_busqueda)));
   model_bus = gtk_tree_view_get_model(GTK_TREE_VIEW(historial_busqueda));
 
-  if (gtk_tree_model_get_iter_first(model_bus, &iter_bus) == FALSE) {
+  if (gtk_tree_model_get_iter_first(model_bus, &iter_bus) == TRUE) {
+	  gtk_list_store_clear(store_bus);
       return;
   }
-  
   gtk_list_store_clear(store_bus);
+  
 }
 
 void meter_historial(){
@@ -766,14 +1059,54 @@ void meter_historial(){
 
 	gtk_list_store_append(store_bus, &iter_bus);
 	gtk_list_store_set(store_bus, &iter_bus, LIST_ITEM, str, -1);
-	gtk_entry_set_text(entry_buscar,"");
+	
 	gtk_stack_set_visible_child (GTK_STACK(stack_historial),contenedor_historial);
+	gtk_entry_set_text(entry_buscar,"");
 }
 	
 
 void on_entry_buscar_activate(){
-	meter_historial();
+	refresca_busqueda();
+	user = gtk_entry_get_text(g_Entry_Usuario);
+	password = gtk_entry_get_text(g_Entry_Contraseña);
+	const char *database = "examen";
+	char busqueda_fac[50];
+	char *server = "localhost";
+	
+	const char 	*busqueda = gtk_entry_get_text(entry_buscar);
+
+	sprintf(busqueda_fac,"select * from Factura where Cliente = '%s'",busqueda);
+	
+	conn = mysql_init(NULL);
+
+ if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0))
+	{	 
 	}
+
+	if (mysql_query(conn, busqueda_fac))
+	{
+		char tempErr[60];
+		sprintf(tempErr,"%s", mysql_error(conn));
+		gtk_label_set_text(lbl_error,tempErr);
+		return gtk_widget_show(dialog_error_datos);
+	}
+	res = mysql_use_result(conn);
+	while ((row = mysql_fetch_row(res)) != NULL) {
+
+			
+			gtk_stack_set_visible_child (GTK_STACK(stack_busqueda),contenedor_busqueda);	
+			if (gtk_tree_model_get_iter_first(model_busc, &iter_busqueda) == FALSE) {
+					 titulo_factura_auditoria_busqueda();
+					 meter_historial();
+					return ;	
+			}
+			
+}
+	mysql_free_result(res);
+	mysql_close(conn);
+	
+	
+}
 void on_remover_item_clicked(){
 	remove_item();
 	}
@@ -781,6 +1114,7 @@ void on_remover_todos_items_clicked(){
 	remove_all();
 	}
 void on_acercade_close (){
+	gtk_dialog_run (GTK_DIALOG (win_acercade));
 	gtk_widget_hide_on_delete(win_acercade);
 	}
 void on_cerrar_acercade_clicked(){
