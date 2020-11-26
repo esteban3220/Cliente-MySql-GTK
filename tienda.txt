@@ -1,0 +1,256 @@
+create table Producto(
+Idproducto int primary key auto_increment,
+Nombre varchar(45),
+Marca  varchar(45),
+Fechacaducidad date,
+Fechaproduccion date,
+Numerolote bigint,
+Descripcion varchar(45),
+Codigobarras bigint,
+Contenidoneto varchar(45)); 
+
+create table Auditoria_productos(
+     id int primary key auto_increment,
+     NomAnt varchar(45),
+     MarAnt varchar(45),
+     FechcadAnt date,
+     FechProAnt  date,
+     NloteAnt  bigint,
+     DescAnt varchar(45),
+     CbarrasAnt  bigint, 
+     CnetoAnt varchar(45),
+     NomNew varchar(45),
+     MarNew varchar(45),
+     FechaNew date,
+     FechProNew date,
+     NloteNew  bigint,
+     DescNew varchar(45),
+     CbarrasNew  bigint, 
+     CnetoNew varchar(45),
+     usuario     varchar(45),
+     modificado  varchar(45),
+     proceso     varchar(45),
+     idproducto   int);
+
+
+
+  NomAnt, MarAnt, FechcadAnt, FechProAnt, NloteAnt, DescAnt, CbarrasAnt, CnetoAnt, 
+  NomNew,  MarNew, FechaNew, FechProNew, NloteNew, DescNew, CbarrasNew, CnetoNew,
+
+
+
+create trigger modifica_Auditoria_productos
+     after update on Producto 
+     for each row 
+     insert into Auditoria_productos
+     ( NomAnt, MarAnt, FechcadAnt, FechProAnt, NloteAnt, DescAnt, CbarrasAnt, CnetoAnt, 
+       NomNew,  MarNew, FechaNew, FechProNew, NloteNew, DescNew, CbarrasNew, CnetoNew,
+       usuario,modificado,proceso,Idproducto)
+     values 
+     (OLD.Nombre,OLD.Marca,OLD.Fechacaducidad,OLD.Fechaproduccion,OLD.Numerolote,OLD.Descripcion,OLD.Codigobarras,OLD.Contenidoneto,
+      NEW.Nombre,NEW.Marca,NEW.Fechacaducidad,NEW.Fechaproduccion,NEW.Numerolote,NEW.Descripcion,NEW.Codigobarras,NEW.Contenidoneto,
+    USER(),NOW(),'Dato Actualizado',NEW.Idproducto);
+
+
+
+ create trigger inserta_Auditoria_productos
+     after insert on Producto 
+     for each row 
+     insert into Auditoria_productos
+     ( NomNew,  MarNew, FechaNew, FechProNew, NloteNew, DescNew, CbarrasNew, CnetoNew,
+       usuario,modificado,proceso,Idproducto)
+     values 
+     (NEW.Nombre,NEW.Marca,NEW.Fechacaducidad,NEW.Fechaproduccion,NEW.Numerolote,NEW.Descripcion,NEW.Codigobarras,NEW.Contenidoneto,
+    USER(),NOW(),'Dato Insertado',NEW.Idproducto);
+
+
+    create trigger elimina_Auditoria_productos
+     after delete on Producto 
+     for each row 
+     insert into Auditoria_productos
+     ( NomAnt, MarAnt, FechcadAnt, FechProAnt, NloteAnt, DescAnt, CbarrasAnt, CnetoAnt, 
+       usuario,modificado,proceso,Idproducto)
+     values 
+     (OLD.Nombre,OLD.Marca,OLD.Fechacaducidad,OLD.Fechaproduccion,OLD.Numerolote,OLD.Descripcion,OLD.Codigobarras,OLD.Contenidoneto,
+      USER(),NOW(),'Dato Eliminado',OLD.Idproducto);
+
+ 
+   
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+create table Empresa(
+Idempresa int primary key auto_increment,
+Idproducto int,
+Nombre varchar(45),
+Direccion varchar(45),
+Telefono bigint,
+Region varchar(45),
+Pais  varchar(45),
+Rfc   varchar(45),
+Correo  varchar(45),
+foreign key (Idproducto) references Producto(Idproducto)
+on update cascade on delete cascade);
+
+create table Auditoria_empresa(
+     id int primary key auto_increment,
+     IdproAnt int,
+     NomAnt varchar(45),
+     DirAnt varchar(45),
+     TelAnt bigint,
+     RegAnt varchar(45),
+     PaisAnt varchar(45),
+     RfcAnt varchar(45),
+     CorrAnt varchar(45),
+     IdproNew int,
+     NomNew varchar(45),
+     DirNew varchar(45),
+     TelNew bigint,
+     RegNew varchar(45),
+     PaisNew varchar(45),
+     RfcNew varchar(45),
+     Corrnew varchar(45),
+     usuario     varchar(45),
+     modificado  varchar(45),
+     proceso     varchar(45),
+     Idempresa   int);
+
+
+
+create trigger modifica_Auditoria_empresa
+     after update on Empresa 
+     for each row 
+     insert into Auditoria_empresa
+     (IdproAnt,NomAnt, DirAnt, TelAnt, RegAnt, PaisAnt, RfcAnt, CorrAnt,
+       IdproNew,NomNew, DirNew, TelNew, RegNew, PaisNew, RfcNew, CorrNew,
+       usuario,modificado,proceso,Idempresa)
+     values 
+     (OLD.Idproducto,OLD.Nombre,OLD.Direccion,OLD.Telefono,OLD.Region,OLD.Pais,OLD.Rfc,OLD.Correo,
+      NEW.Idproducto,NEW.Nombre,NEW.Direccion,NEW.Telefono,NEW.Region,NEW.Pais,NEW.Rfc,NEW.Correo,
+    USER(),NOW(),'Dato Actualizado',NEW.Idempresa);
+
+
+
+create trigger inserta_Auditoria_empresa
+     after insert on Empresa 
+     for each row 
+     insert into Auditoria_empresa
+     (IdproNew,NomNew, DirNew, TelNew, RegNew, PaisNew, RfcNew, CorrNew,
+       usuario,modificado,proceso,Idempresa)
+     values 
+     (NEW.Idproducto,NEW.Nombre,NEW.Direccion,NEW.Telefono,NEW.Region,NEW.Pais,NEW.Rfc,NEW.Correo,
+    USER(),NOW(),'Dato Insertado',NEW.Idempresa);
+
+create trigger elimina_Auditoria_empresa
+     after delete on Empresa 
+     for each row 
+     insert into Auditoria_empresa
+     (IdproAnt,NomAnt, DirAnt, TelAnt, RegAnt, PaisAnt, RfcAnt, CorrAnt,
+       usuario,modificado,proceso,Idempresa)
+     values 
+     (OLD.Idproducto,OLD.Nombre,OLD.Direccion,OLD.Telefono,OLD.Region,OLD.Pais,OLD.Rfc,OLD.Correo,
+       USER(),NOW(),'Dato Eliminado',OLD.Idempresa);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+create table Factura(
+Idfactura  int primary key auto_increment,
+Idproducto int,
+Idempresa  int,
+Fechadeventa date,
+cantidad int, 
+precio double,
+ModoPago  varchar(45),
+Descuento  int,
+Total  double,
+foreign key (Idproducto) references Producto(Idproducto)
+on update cascade on delete cascade,
+foreign key (Idempresa) references Empresa(Idempresa)
+on update cascade on delete cascade);
+
+create table Auditoria_Factura(
+     id int primary key auto_increment,
+     IdproAnt int,
+     IdempAnt int,
+     FechventaAnt date,
+     CantAnt int,
+     PreAnt double,
+     ModopagoAnt varchar(45),
+     DescAnt  int,
+     TotalAnt  int,
+     IdproNew int,
+     IdempNew int,
+     FechventaNew date,
+     CantNew int,
+     PreNew double,
+     ModopagoNew varchar(45),
+     DescNew  int,
+     TotalNew int,
+     usuario     varchar(45),
+     modificado  varchar(45),
+     proceso     varchar(45),
+     Idfactura   int);
+
+
+
+
+
+IdproAnt,IdempAnt,FechventaAnt,CantAnt,PreAnt,ModopagoAnt,DescAnt,TotalAnt, 
+IdproNew,IdempNew,FechventaNew,CantNew,PreNew,ModopagoNew,DescNew,TotalNew,
+
+
+
+
+OLD.Idproducto,OLD.Idempresa,OLD.Fechadeventa,OLD.cantidad,OLD.precio,OLD.ModoPago,OLD.Descuento,OLD.Total
+NEW.Idproducto,NEW.Idempresa,NEW.Fechadeventa,NEW.cantidad,NEW.precio,NEW.ModoPago,NEW.Descuento,NEW.Total
+
+
+
+
+
+
+
+
+create trigger modifica_Auditoria_factura
+     after update on Factura 
+     for each row 
+     insert into Auditoria_factura
+     ( IdproAnt,IdempAnt,FechventaAnt,CantAnt,PreAnt,ModopagoAnt,DescAnt,TotalAnt, 
+       IdproNew,IdempNew,FechventaNew,CantNew,PreNew,ModopagoNew,DescNew,TotalNew,
+       usuario,modificado,proceso,Idfactura)
+     values 
+     (OLD.Idproducto,OLD.Idempresa,OLD.Fechadeventa,OLD.cantidad,OLD.precio,OLD.ModoPago,OLD.Descuento,OLD.Total,
+      NEW.Idproducto,NEW.Idempresa,NEW.Fechadeventa,NEW.cantidad,NEW.precio,NEW.ModoPago,NEW.Descuento,NEW.Total,
+      USER(),NOW(),'Dato Actualizado',NEW.Idfactura);
+
+
+
+
+create trigger inserta_Auditoria_factura
+     after insert on Factura 
+     for each row 
+     insert into Auditoria_factura
+     (IdproNew,IdempNew,FechventaNew,CantNew,PreNew,ModopagoNew,DescNew,TotalNew,
+       usuario,modificado,proceso,Idfactura)
+     values 
+     (NEW.Idproducto,NEW.Idempresa,NEW.Fechadeventa,NEW.cantidad,NEW.precio,NEW.ModoPago,NEW.Descuento,NEW.Total,
+      USER(),NOW(),'Dato Insertado',NEW.Idfactura);
+           
+
+
+create trigger elimina_Auditoria_factura
+     after delete on Factura 
+     for each row 
+     insert into Auditoria_factura
+     (IdproAnt,IdempAnt,FechventaAnt,CantAnt,PreAnt,ModopagoAnt,DescAnt,TotalAnt, 
+       usuario,modificado,proceso,Idfactura)
+     values 
+     (OLD.Idproducto,OLD.Idempresa,OLD.Fechadeventa,OLD.cantidad,OLD.precio,OLD.ModoPago,OLD.Descuento,OLD.Total,
+      USER(),NOW(),'Dato Eliminado',OLD.Idfactura);
+
+
+
+
+
+
+
