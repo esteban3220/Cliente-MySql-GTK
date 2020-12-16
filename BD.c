@@ -27,8 +27,7 @@
 #include <stdlib.h>
 #include <gtksourceview/gtksource.h>
 
-GtkBuilder      	*builder; 
-GtkWidget   	    *window_login;
+GtkWidget 			*window_login;
 GtkEntry 			*g_Entry_Usuario;
 GtkEntry 			*g_Entry_Contraseña;
 GtkToggleButton		*mostrar_calendario;
@@ -112,6 +111,7 @@ GtkWidget			*lbl_no_datos;
 GtkLabel			*lbl_añadir_advertencia;
 GtkLabel			*lbl_eliminar_advertencia;
 GtkLabel			*lbl_error;
+GtkLabel			*lbl_info;
 GtkWidget			*cb_anio_fac;
 GtkWidget			*cb_mes_fac;
 GtkWidget			*cb_dia_fac;
@@ -161,6 +161,7 @@ GtkWidget			*contenedor_historial;
 GtkWidget			*contenedor_busqueda;
 GtkWidget			*historial_busqueda;
 GtkWidget       	*debug;
+GtkWidget			*info_bar;
 GtkCalendar			*calendario_factura;
 GtkTextBuffer 		*textbuffer_main;
 GtkTextView			*debug_textview;
@@ -1492,6 +1493,8 @@ void init_list(GtkWidget *historial_busqueda) {
 
 int main(int argc, char *argv[])
 	{
+		GtkBuilder      	*builder; 
+		
 		char anio[256];
 		int i;
 		gtk_init(&argc, &argv);
@@ -1504,6 +1507,7 @@ int main(int argc, char *argv[])
 		actualiza_factura = GTK_WIDGET(gtk_builder_get_object(builder,"actualiza_factura"));
 		actualiza_empresa = GTK_WIDGET(gtk_builder_get_object(builder,"actualiza_empresa"));
 		actualiza_producto = GTK_WIDGET(gtk_builder_get_object(builder,"actualiza_producto"));
+		info_bar  = GTK_WIDGET(gtk_builder_get_object(builder,"info_bar"));
 		g_Entry_Usuario = GTK_ENTRY(gtk_builder_get_object(builder,"Entry_Usuario"));
 		g_Entry_Contraseña = GTK_ENTRY(gtk_builder_get_object(builder,"Entry_Contraseña"));
 		g_Dialog_Error = GTK_WIDGET(gtk_builder_get_object(builder,"Dialog_Error"));
@@ -1558,6 +1562,7 @@ int main(int argc, char *argv[])
 		lbl_no_datos = GTK_WIDGET(gtk_builder_get_object(builder,"lbl_no_datos"));
 		lbl_añadir_advertencia = GTK_LABEL(gtk_builder_get_object(builder,"lbl_añadir_advertencia"));
 		lbl_eliminar_advertencia = GTK_LABEL(gtk_builder_get_object(builder,"lbl_eliminar_advertencia"));
+		lbl_info = GTK_LABEL(gtk_builder_get_object(builder,"lbl_info"));
 		advertencia_añadir_fac = GTK_WIDGET(gtk_builder_get_object(builder,"advertencia_añadir_fac"));
 		advertencia_añadir_emp = GTK_WIDGET(gtk_builder_get_object(builder,"advertencia_añadir_emp"));
 		advertencia_añadir_pro = GTK_WIDGET(gtk_builder_get_object(builder,"advertencia_añadir_pro"));
@@ -1757,7 +1762,8 @@ void on_fac_aceptar_añadir_clicked(){
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_añadir_fac);
-	gtk_widget_show(info_ananido);
+	gtk_label_set_text(lbl_info,"Dato Insertado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 	}
 void on_inserta_datos_factura_clicked(){
 		gtk_widget_show(advertencia_añadir_fac);
@@ -1819,7 +1825,8 @@ void on_emp_aceptar_añadir_clicked(){
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_añadir_emp);
-	gtk_widget_show(info_ananido);
+	gtk_label_set_text(lbl_info,"Dato Insertado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 	}
 void on_btn_cancelar_adver6_clicked(){
 		gtk_widget_hide(advertencia_añadir_emp);
@@ -1892,7 +1899,8 @@ user = gtk_entry_get_text(g_Entry_Usuario);
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_añadir_pro);
-	gtk_widget_show(info_ananido);
+	gtk_label_set_text(lbl_info,"Dato Insertado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 	}
 //================================================
 void on_mostrar_calendario_toggled(){
@@ -1971,7 +1979,8 @@ void on_btn_aceptar__clicked(){
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_actualizar_fac);
-	gtk_widget_show(info_actualizar);
+	gtk_label_set_text(lbl_info,"Dato Actualizado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 	}
 void on_actualiza_datos_factura_clicked(){
 		gtk_widget_show(advertencia_actualizar_fac);
@@ -2060,7 +2069,9 @@ void on_btn_actualiza_emp_clicked(){
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_actualizar_emp);	
-	gtk_widget_show(info_actualizar);
+	
+	gtk_label_set_text(lbl_info,"Dato Actualizado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 	}
 	
 void on_actualiza_datos_producto_clicked(){
@@ -2130,8 +2141,9 @@ void on_btn_actualiza_pro_clicked(){
 
 	mysql_free_result(res);
 	mysql_close(conn);
-	gtk_widget_hide(advertencia_actualizar_pro);		
-	gtk_widget_show(info_actualizar);
+	gtk_widget_hide(advertencia_actualizar_pro);
+	gtk_label_set_text(lbl_info,"Dato Actualizado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 	
 }
 //================================================
@@ -2219,7 +2231,8 @@ void on_btn_aceptar_a_clicked(){
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_eliminar_fac);
-	gtk_widget_show(info_eliminado);
+	gtk_label_set_text(lbl_info,"Dato Eliminado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 }
 void on_btn_cancelar_adver2_clicked(){
 	gtk_widget_hide(advertencia_eliminar_fac);
@@ -2268,7 +2281,8 @@ void on_btn_aceptar_a1_clicked(){
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_eliminar_emp);
-	gtk_widget_show(info_eliminado);
+	gtk_label_set_text(lbl_info,"Dato Eliminado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 }
 void on_btn_borrar_pro_clicked(){
 	gtk_widget_show(advertencia_eliminar_pro);
@@ -2311,7 +2325,8 @@ void on_btn_aceptar_a2_clicked(){
 	mysql_free_result(res);
 	mysql_close(conn);
 	gtk_widget_hide(advertencia_eliminar_pro);
-	gtk_widget_show(info_eliminado);
+	gtk_label_set_text(lbl_info,"Dato Eliminado Exitosamente");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 }
 	
 //================================================
@@ -2642,7 +2657,8 @@ void on_exportar_pdf_clicked(){
 	mysql_close(conn);
   
 
-    printf("Proceso completado");
+    gtk_label_set_text(lbl_info,"PDF Creado");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),TRUE);
 	}
 void on_remover_item_clicked(){
 	remove_item();
@@ -2660,9 +2676,10 @@ void on_cerrar_acercade_clicked(){
 void on_acercade_destroy(){
 	gtk_widget_hide(win_acercade);
 		}	
-void on_btn_aceptar_dial_advertencia_clicked(){
-	
-	} 
+void on_info_close(){
+	gtk_label_set_text(lbl_info,"");
+	gtk_revealer_set_reveal_child (GTK_REVEALER (info_bar),FALSE);
+	}
 void on_btn_aceptar_2_clicked(){
 	gtk_widget_hide(info_actualizar);
 	}
